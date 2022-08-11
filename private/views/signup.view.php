@@ -1,4 +1,4 @@
-<!-- <?php $this->view('includes/header')?>
+<?php $this->view('includes/header')?> 
 	
 	<div class="container-fluid">
 		
@@ -32,4 +32,4 @@
 		</div>
 	</div>
 
-<?php $this->view('includes/footer')?> -->
+<?php $this->view('includes/footer')?> 
