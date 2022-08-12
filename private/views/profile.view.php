@@ -1,4 +1,4 @@
-<!-- <!-- <?php $this->view('includes/header')?> -->
+<?php $this->view('includes/header')?>
 <?php $this->view('includes/nav')?>
 	
 	<div class="container-fluid p-4 shadow mx-auto" style="max-width: 1000px;">
@@ -48,4 +48,4 @@
 		</div>
 	</div>
 
-<?php $this->view('includes/footer')?> -->
+<?php $this->view('includes/footer')?>

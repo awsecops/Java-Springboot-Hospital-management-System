@@ -30,4 +30,11 @@ class Controller
 		
 		return false;
 	}
+
+	public function redirect($link)
+	{
+
+		header("Location: ". ROOT . "/".trim($link,"/"));
+		die;
+	}
 }
