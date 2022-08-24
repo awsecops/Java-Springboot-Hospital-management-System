@@ -14,6 +14,8 @@ class User extends Model
         'gender',
         'rank',
         'date',
+        'image',
+        'school_id',
     ];
 
     protected $beforeInsert = [
@@ -22,8 +24,12 @@ class User extends Model
         'hash_password'
     ];
 
+    protected $beforeUpdate = [
+        'hash_password'
+    ];
 
-    public function validate($DATA)
+
+    public function validate($DATA,$id = '')
     {
         $this->errors = array();
 
@@ -46,21 +52,31 @@ class User extends Model
         }
         
         //check if email exists
-        if($this->where('email',$DATA['email']))
-        {
-            $this->errors['email'] = "That email is already in use";
+        if(trim($id) == ""){
+            if($this->where('email',$DATA['email']))
+            {
+                $this->errors['email'] = "That email is already in use";
+            }
+        }else{
+            if($this->query("select email from $this->table where email = :email && user_id != :id",['email'=>$DATA['email'],'id'=>$id]))
+            {
+                $this->errors['email'] = "That email is already in use";
+            }
         }
 
         //check for password
-        if(empty($DATA['password']) || $DATA['password'] !== $DATA['password2'])
-        {
-            $this->errors['password'] = "Passwords do not match";
-        }
+        if(isset($DATA['password'])){
 
-        //check for password length
-        if(strlen($DATA['password']) < 8)
-        {
-            $this->errors['password'] = "Password must be at least 8 characters long";
+            if(empty($DATA['password']) || $DATA['password'] !== $DATA['password2'])
+            {
+                $this->errors['password'] = "Passwords do not match";
+            }
+
+            //check for password length
+            if(strlen($DATA['password']) < 8)
+            {
+                $this->errors['password'] = "Password must be at least 8 characters long";
+            }
         }
 
         //check for gender
@@ -88,9 +104,16 @@ class User extends Model
 
     public function make_user_id($data)
     {
-        $data['user_id'] = random_string(60);
+        $data['user_id'] = strtolower($data['firstname'] . "." . $data['lastname']);
+
+        while($this->where('user_id',$data['user_id']))
+        {
+            $data['user_id'] .= rand(10,9999);
+        }
+
         return $data;
     }
+
 
     public function make_school_id($data)
     {
@@ -102,7 +125,10 @@ class User extends Model
 
     public function hash_password($data)
     {
-        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        if(isset($data['password'])){
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+        
         return $data;
     }
 
